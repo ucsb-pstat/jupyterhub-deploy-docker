@@ -41,7 +41,7 @@ Key components of this reference deployment are:
   in a Docker container on the host.
 
 * **Authenticator**: Uses [OAuthenticator](https://github.com/jupyter/oauthenticator)
-  and [GitHub OAuth](https://developer.github.com/v3/oauth/) to
+  and [UCSB Google OAuth](https://developer.ucsb.edu/docs/security/google-end-user-oauth) to
   authenticate users.
 
 * **Spawner**:Uses [DockerSpawner](https://github.com/jupyter/dockerspawner)
@@ -106,24 +106,31 @@ certificate and key file in the JupyterHub configuration. To configure:
 
 ## Authenticator setup
 
-This deployment uses GitHub OAuth to authenticate users.
+This deployment uses Google OAuth to authenticate users.
 
-It requires that you create and register a [GitHub OAuth application](https://github.com/settings/applications/new)
-by filling out a form on the GitHub site:
+It requires that you create and register a [Google OAuth credentials](https://developers.google.com/identity/protocols/OAuth2):
 
-![GitHub OAuth application form](docs/oauth-form.png)
+In this form, you will specify the OAuth application's information:
 
-In this form, you will specify the OAuth application's callback URL in
-this format: `https://<myhost.mydomain>/hub/oauth_callback`.
+### OAuth consent screen
+- Application type: Public
+- Application name: some-name
+- Authorized domains: `ucsb.edu`
+- Application Homepage link: `https://myhost.ucsb.edu`
 
-After you submit the GitHub form, GitHub registers your OAuth application and
+### Credentials
+- Type: Web application
+- Authorized JavaScript origins: `https://myhost.ucsb.edu`
+- Authorized redirect URIs (Callback URL): `https://myhost.ucsb.edu/hub/oauth_callback`.
+
+After you submit the form, Google registers your OAuth application and
 assigns a unique Client ID and Client Secret. The Client Secret should be
 kept private.
 
-At JupyterHub's runtime, you must pass the GitHub OAuth Client ID, Client
+At JupyterHub's runtime, you must pass the Google OAuth Client ID, Client
 Secret and OAuth callback url. You can do this by either:
 
-- setting the `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and
+- setting the `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and
   `OAUTH_CALLBACK_URL` environment variables when you run the
   JupyterHub container, or
 - add them to an `oauth.env` file in the `secrets` directory of this repository.
@@ -132,13 +139,13 @@ Secret and OAuth callback url. You can do this by either:
 
   `oauth.env` file
   ```
-  GITHUB_CLIENT_ID=<github_client_id>
-  GITHUB_CLIENT_SECRET=<github_client_secret>
-  OAUTH_CALLBACK_URL=https://<myhost.mydomain>/hub/oauth_callback
+  GOOGLE_CLIENT_ID=<github_client_id>
+  GOOGLE_CLIENT_SECRET=<github_client_secret>
+  OAUTH_CALLBACK_URL=https://myhost.ucsb.edu/hub/oauth_callback
   ```
 
   **Note:** The `oauth.env` file is a special file that Docker Compose uses
-  to lookup environment variables. If you choose to place the GitHub
+  to lookup environment variables. If you choose to place the Google
   OAuth application settings in this file, you should make sure that the
   file remains private (be careful to not commit the `oauth.env` file with
   these secrets to source control).
@@ -150,7 +157,7 @@ Finish configuring JupyterHub and then build the hub's Docker image. (We'll
 build the Jupyter Notebook image in the next section.)
 
 1. Configure `userlist`: Create a `userlist` file of authorized JupyterHub
-   users. The list should contain GitHub usernames, and this file should
+   users. The list should contain Google usernames (UCSB NetIDs without `@ucsb.edu`), and this file should
    designate at least one `admin` user. For instance, the example file below
    contains three users, `jtyberg`, `jenny`, and `guido`, and one designated
    administrator, `jtyberg`:
@@ -223,7 +230,7 @@ Once the container is running, you should be able to access the JupyterHub conso
 
 **file**
 ```
-https://myhost.mydomain
+https://myhost.ucsb.edu
 ```
 
 To bring down the JupyterHub container:
