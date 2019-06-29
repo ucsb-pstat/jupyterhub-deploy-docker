@@ -118,7 +118,7 @@ In this form, you will specify the OAuth application's information:
 - Authorized domains: `ucsb.edu`
 - Application Homepage link: `https://myhost.ucsb.edu`
 
-### Credentials
+### Credentials screen
 - Type: Web application
 - Authorized JavaScript origins: `https://myhost.ucsb.edu`
 - Authorized redirect URIs (Callback URL): `https://myhost.ucsb.edu/hub/oauth_callback`.
